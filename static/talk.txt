@@ -1,0 +1,84 @@
+===Angular basics===
+
+HTML only angular magic and two-way binding
+  ng-app
+  ng-model person.name input to Hello, {{}}.
+  evaluates logical statements, can insert placeholders here
+  look it does math! real math!
+  ng-bind as alternative to {{}}
+  
+ng-app has name myApp
+instantiate app
+make our first controller
+
+$scope
+  SillyController
+  sets person
+  demonstrate $rootScope — don’t use
+
+Scopes inherit prototypically by default.
+  scoreboard controller v0
+  add second input, binding still works
+
+scoreboard controller v1:
+  fun with builtin directives:
+
+    ng-hide/ng-show the whole thing
+
+    ng-repeat
+      make a $scope.players list
+
+  orderBy filter — name, points
+
+  custom filter - show if has the letter a in it somewhere
+
+  ng-class, add class to winner
+
+  ng-click, make an alert, then make a $scope.score(num, player)
+
+Don't dirty scope: Ideally your objects carry their own methods, and/or maybe you have a config object if you've got a lot of settings vars rather than setting them all on $scope. We do a bad job of this right now.
+  scoreboard controller v2
+    prototype of player object with method for modifying points
+
+custom directives
+  "A directive is something that introduces new syntax. Directives are markers on a DOM element which attach a special behavior to it, that don't come with HTML. e.g. datepicker"
+  make a basic player row directive
+  template url
+  uses parent’s scope (could have its own scope inheriting from parent, or an isolate scope)
+  aero- prefix
+  allows us to spin out some of the HTML into a template, which is nice, but directives can also have their own controllers and more complex and reusable behavior
+
+More info/docs at https://docs.angularjs.org, but the docs kind of suck sometimes. (Examples can be lacking coverage of common use cases; sometimes no working sample code at all.) Third party blog posts often more helpful.
+ng-book is awesome and great and I'm still working through it. I usually keep it in the office, feel free to borrow.
+
+===Angular at AeroFS===
+
+Inside src/web/web/static:
+
+Shelob - my files
+Shadowfax - shared folders
+Saruman - devices
+
+Strider - users administration
+Fellowship - groups administration
+
+All of these have their initial load in a mako template, and use included templates (stored in the eponymous folder in static) for some or all of the content. Data comes via json calls to pyramid views.
+
+We use AngularUI Bootstrap to create and manage our modals (popup boxes) in all apps except Shelob. Shelob probably ought to use it too. 
+
+We also use some services: $http to make http requests and $log for log handling. Shelob uses ngRoute.
+
+We should probably use ngRoute to load different views and handle pagination, rather than having five separate angular apps.
+
+Pagination directive currently lives in shadowfax but is used by other apps as well. As written it's a giant hack. Need to make it a proper directive with its own controller.
+
+A lot of info, such as config variables or URL routes, gets passed:
+pyramid view --> mako template --> global JS variable --> angularjs app
+
+This is slightly dirty. Things we could do:
+  * Hardcode things: (URLs for fetching data, pagination limits, etc). (Con: breaks if we change things server-side.)
+  * API routes for fetching config info and/or make the endpoints angular already contacts be more verbose. Pagination-related info seems like it could fit here okay. But having e.g. is_private_deployment tacked onto random requests seems weird. Or whatever string admin_level or user_level evaluate to.
+  * Decide that it ain't broke, why fix it.
+
+
+  
